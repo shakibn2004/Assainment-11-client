@@ -3,8 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, TrendingUp, Users, ShieldCheck, Play, ArrowUpRight } from "lucide-react";
-import { TiltCard } from "@/components/shared/TiltCard";
+import { TrendingUp, ShieldCheck, Play, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MOCK_CAMPAIGNS } from "@/services/mock/data";
 
