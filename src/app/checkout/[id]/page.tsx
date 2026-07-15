@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { ShieldCheck, Lock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 export default function CheckoutPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -33,6 +34,9 @@ export default function CheckoutPage({ params }: { params: Promise<{ id: string 
     // Mock processing
     setTimeout(() => {
       setIsProcessing(false);
+      toast.success("Payment successful!", {
+        description: `Thank you for supporting ${campaign.title}.`,
+      });
       router.push("/dashboard"); // Route back to supporter dashboard after success
     }, 2000);
   };

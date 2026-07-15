@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle2, ChevronRight, UploadCloud } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function CreateCampaignForm() {
   const [step, setStep] = useState(1);
@@ -17,6 +18,9 @@ export default function CreateCampaignForm() {
     if (step < 3) setStep(step + 1);
     else {
       // Mock submit
+      toast.success("Campaign created successfully!", {
+        description: "Your campaign is now under review and will be live soon."
+      });
       router.push("/dashboard");
     }
   };

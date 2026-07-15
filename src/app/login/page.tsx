@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/useAuthStore";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
+import { toast } from "sonner";
+
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
@@ -26,12 +28,18 @@ export default function LoginPage() {
       // In a real app, you would validate credentials here.
       // Since this is a demo, any email will just mock login.
       login(email || "alex@example.com");
+      toast.success("Successfully logged in", {
+        description: "Welcome back to SparkLift!",
+      });
       router.push("/dashboard");
     }, 1000);
   };
 
   const demoLogin = (mockEmail: string) => {
     login(mockEmail);
+    toast.success("Demo Login Successful", {
+      description: `Logged in as ${mockEmail}`,
+    });
     router.push("/dashboard");
   };
 

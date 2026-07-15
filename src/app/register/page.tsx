@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/useAuthStore";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
+import { toast } from "sonner";
+
 export default function RegisterPage() {
   const router = useRouter();
   const { login } = useAuthStore();
@@ -27,6 +29,9 @@ export default function RegisterPage() {
       // In a real app, you would create an account here.
       // Since this is a demo, any email will just mock login.
       login(email || "alex@example.com");
+      toast.success("Account created successfully", {
+        description: "Welcome to SparkLift!",
+      });
       router.push("/dashboard");
     }, 1000);
   };
