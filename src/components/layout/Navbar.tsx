@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -31,11 +30,22 @@ import {
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const { data: session, isPending, error } = authClient.useSession();
+  const router = useRouter()
   let user = session?.user;
-  let logout = true;
+
+  const handleSingOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login"); // redirect to login page
+        },
+      },
+    });
+  };
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -178,7 +188,7 @@ export function Navbar() {
                   <DropdownMenuSeparator className="bg-border dark:bg-white/10" />
 
                   <DropdownMenuItem
-                    onClick={logout}
+                    onClick={handleSingOut}
                     className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
@@ -268,10 +278,7 @@ export function Navbar() {
                       Settings
                     </Link>
                     <button
-                      onClick={() => {
-                        logout();
-                        setIsMobileMenuOpen(false);
-                      }}
+                      onClick={handleSingOut}
                       className="flex items-center gap-3 text-lg font-medium text-destructive mt-4 text-left"
                     >
                       <LogOut className="w-5 h-5" /> Log out

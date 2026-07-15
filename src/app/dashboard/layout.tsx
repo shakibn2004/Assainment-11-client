@@ -26,6 +26,9 @@ import { authClient } from "@/lib/auth-client";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { data: session, isPending, error } = authClient.useSession();
+  let isLoading = isPending;
+  let isAuthenticated = session;
+  let user = session?.user;
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
