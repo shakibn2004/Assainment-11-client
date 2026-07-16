@@ -1,3 +1,4 @@
+<img width="1080" height="1080" alt="1" src="https://github.com/user-attachments/assets/93b39a8e-0f47-454f-bb7b-1d01482e507c" />
 <div align="center">
   <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/rocket.svg" width="80" alt="SparkLift Logo" />
   <h1 align="center">SparkLift</h1>
