@@ -34,17 +34,26 @@ export default function CheckoutPage({
 
   if (!campaign) return null;
 
-  const handlePayment = (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!campaign) return;
     setIsProcessing(true);
-    // Mock processing
-    setTimeout(() => {
-      setIsProcessing(false);
+    
+    try {
+      // For this mock checkout, we use the hardcoded total of $214
+      await campaignApi.updateCampaign(campaign.id, {
+        currentAmount: (campaign.currentAmount || 0) + 214,
+        backersCount: (campaign.backersCount || 0) + 1,
+      });
+
       toast.success("Payment successful!", {
         description: `Thank you for supporting ${campaign.title}.`,
       });
-      router.push("/dashboard"); // Route back to supporter dashboard after success
-    }, 2000);
+      router.push("/dashboard"); // Route back to dashboard after success
+    } catch (error) {
+      toast.error("Payment failed to process. Please try again.");
+      setIsProcessing(false);
+    }
   };
 
   return (
