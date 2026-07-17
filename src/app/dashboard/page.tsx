@@ -1,17 +1,18 @@
 "use client";
 
-import { useAuthStore } from "@/store/useAuthStore";
 import { AdminDashboard } from "@/components/dashboard/AdminDashboard";
 import { CreatorDashboard } from "@/components/dashboard/CreatorDashboard";
 import { SupporterDashboard } from "@/components/dashboard/SupporterDashboard";
 import { authClient } from "@/lib/auth-client";
+import { User } from "@/types";
 
-export default function DashboardPage() {  
+export default function DashboardPage() {
   const { data: session, isPending, error } = authClient.useSession();
   if (!session) return null;
 
-
-  switch (session.user.role) {
+  const user = session.user as unknown as User;
+  
+  switch (user.role) {
     case "ADMIN":
       return <AdminDashboard />;
     case "CREATOR":

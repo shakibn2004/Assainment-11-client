@@ -1,7 +1,14 @@
+"use client";
+
 import { Rocket, MessageCircle, Globe, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 export function Footer() {
+  const { data: session } = authClient.useSession();
+  const role = (session?.user as any)?.role?.toLowerCase();
+  const canStartCampaign = role === "admin" || role === "creator";
+
   return (
     <footer className="border-t border-white/5 bg-background relative overflow-hidden">
       {/* Decorative gradient orb */}
@@ -42,7 +49,9 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-foreground">Platform</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link href="/explore" className="hover:text-primary transition-colors">Explore Projects</Link></li>
-              <li><Link href="/campaigns" className="hover:text-primary transition-colors">Start a Campaign</Link></li>
+              {canStartCampaign && (
+                <li><Link href="/campaigns" className="hover:text-primary transition-colors">Start a Campaign</Link></li>
+              )}
               <li><Link href="/success" className="hover:text-primary transition-colors">Success Stories</Link></li>
               <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
             </ul>

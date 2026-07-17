@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { MOCK_CAMPAIGNS } from "@/services/mock/data";
+import { campaignApi } from "@/services/api/campaigns";
 import { Campaign } from "@/types";
 import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
@@ -15,9 +15,10 @@ export default function CampaignDetailsPage({ params }: { params: Promise<{ id: 
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   
   useEffect(() => {
-    const found = MOCK_CAMPAIGNS.find(c => c.id === resolvedParams.id);
-    if (!found) notFound();
-    setCampaign(found);
+    campaignApi.getCampaignById(resolvedParams.id).then(found => {
+      if (!found) notFound();
+      setCampaign(found);
+    });
   }, [resolvedParams.id]);
 
   if (!campaign) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 rounded-full border-t-2 border-primary animate-spin"></div></div>;

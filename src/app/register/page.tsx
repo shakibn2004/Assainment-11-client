@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -19,22 +19,26 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const userData = Object.fromEntries(formData.entries());
+    // Basic validation
+    if (!name || !email || !password) {
+      toast.error("Please fill in all fields");
+      setIsLoading(false);
+      return;
+    }
 
-    const { name, email, password } = userData;
-
-    const { data, error } = await authClient.signUp.email(
+    // Removed the unused 'const { data, error } = ' to prevent build errors
+    await authClient.signUp.email(
       {
         name,
         email,
         password,
-        role: 'ADMIN',
-      },
+        role: "SUPPORTER",
+        status: "ACTIVE",
+      } as any, // Typecast to 'any' to avoid TS errors if role/status aren't typed in your authClient setup
       {
         onSuccess: () => {
           router.push("/dashboard");
@@ -44,10 +48,11 @@ export default function RegisterPage() {
           setIsLoading(false);
         },
         onError: (ctx) => {
-          toast.success(ctx.error.message, {});
+          // Changed to toast.error instead of toast.success
+          toast.error(ctx.error.message, {});
           setIsLoading(false);
         },
-      },
+      }
     );
   };
 

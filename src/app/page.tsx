@@ -5,7 +5,8 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { TrendingUp, ShieldCheck, Play, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MOCK_CAMPAIGNS } from "@/services/mock/data";
+import { campaignApi } from "@/services/api/campaigns";
+import { Campaign } from "@/types";
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
@@ -20,7 +21,14 @@ export default function LandingPage() {
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-  useEffect(() => setMounted(true), []);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+    campaignApi.getFeaturedCampaigns().then(data => {
+      setCampaigns(data.length > 0 ? data : []);
+    });
+  }, []);
 
   if (!mounted) return null;
 
@@ -105,10 +113,10 @@ export default function LandingPage() {
                 transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute top-10 right-0 w-[300px] h-[400px] rounded-[2rem] overflow-hidden border border-border dark:border-white/10 shadow-2xl z-20"
               >
-                <img src={MOCK_CAMPAIGNS[0]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 1" />
+                <img src={campaigns[0]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 1" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <p className="text-white font-bold text-lg leading-tight mb-1">{MOCK_CAMPAIGNS[0]?.title}</p>
+                  <p className="text-white font-bold text-lg leading-tight mb-1">{campaigns[0]?.title}</p>
                   <p className="text-primary font-medium text-sm">Funded in 4 hours</p>
                 </div>
               </motion.div>
@@ -119,7 +127,7 @@ export default function LandingPage() {
                 transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute bottom-0 left-0 w-[280px] h-[350px] rounded-[2rem] overflow-hidden border border-border dark:border-white/10 shadow-2xl z-10 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 hover:z-30 transition-all duration-700"
               >
-                <img src={MOCK_CAMPAIGNS[1]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 2" />
+                <img src={campaigns[1]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 2" />
               </motion.div>
             </motion.div>
             
@@ -150,24 +158,24 @@ export default function LandingPage() {
               transition={{ duration: 0.8 }}
               className="md:col-span-8 row-span-2 relative group overflow-hidden rounded-[2rem]"
             >
-              <Link href={`/campaign/${MOCK_CAMPAIGNS[0]?.id}`} className="block w-full h-full">
-                <img src={MOCK_CAMPAIGNS[0]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Main Feature" />
+              <Link href={`/campaign/${campaigns[0]?.id}`} className="block w-full h-full">
+                <img src={campaigns[0]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Main Feature" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 p-10 flex flex-col justify-end">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-xs font-semibold text-white uppercase tracking-wider">{MOCK_CAMPAIGNS[0]?.category}</span>
+                    <span className="px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-xs font-semibold text-white uppercase tracking-wider">{campaigns[0]?.category}</span>
                     <span className="px-4 py-1.5 rounded-full bg-primary/20 text-primary border border-primary/30 text-xs font-semibold uppercase tracking-wider">Editor's Choice</span>
                   </div>
-                  <h3 className="text-4xl font-medium text-white mb-2">{MOCK_CAMPAIGNS[0]?.title}</h3>
-                  <p className="text-white/60 mb-6 max-w-xl">{MOCK_CAMPAIGNS[0]?.tagline}</p>
+                  <h3 className="text-4xl font-medium text-white mb-2">{campaigns[0]?.title}</h3>
+                  <p className="text-white/60 mb-6 max-w-xl">{campaigns[0]?.tagline}</p>
                   <div className="flex gap-8 items-end">
                     <div>
                       <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Pledged</p>
-                      <p className="text-2xl font-medium text-white">${MOCK_CAMPAIGNS[0]?.currentAmount.toLocaleString()}</p>
+                      <p className="text-2xl font-medium text-white">${campaigns[0]?.currentAmount.toLocaleString()}</p>
                     </div>
                     <div>
                       <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Funded</p>
-                      <p className="text-2xl font-medium text-primary">{Math.round((MOCK_CAMPAIGNS[0]?.currentAmount || 0) / (MOCK_CAMPAIGNS[0]?.goalAmount || 1) * 100)}%</p>
+                      <p className="text-2xl font-medium text-primary">{Math.round((campaigns[0]?.currentAmount || 0) / (campaigns[0]?.goalAmount || 1) * 100)}%</p>
                     </div>
                   </div>
                 </div>
@@ -182,13 +190,13 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="md:col-span-4 row-span-1 relative group overflow-hidden rounded-[2rem]"
             >
-              <Link href={`/campaign/${MOCK_CAMPAIGNS[1]?.id}`} className="block w-full h-full">
-                <img src={MOCK_CAMPAIGNS[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 1" />
+              <Link href={`/campaign/${campaigns[1]?.id}`} className="block w-full h-full">
+                <img src={campaigns[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 1" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                  <span className="px-3 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-[10px] font-semibold text-white uppercase tracking-wider w-fit mb-3">{MOCK_CAMPAIGNS[1]?.category}</span>
-                  <h3 className="text-xl font-medium text-white mb-1">{MOCK_CAMPAIGNS[1]?.title}</h3>
-                  <p className="text-white/60 text-sm line-clamp-2">{MOCK_CAMPAIGNS[1]?.tagline}</p>
+                  <span className="px-3 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-[10px] font-semibold text-white uppercase tracking-wider w-fit mb-3">{campaigns[1]?.category}</span>
+                  <h3 className="text-xl font-medium text-white mb-1">{campaigns[1]?.title}</h3>
+                  <p className="text-white/60 text-sm line-clamp-2">{campaigns[1]?.tagline}</p>
                 </div>
               </Link>
             </motion.div>
@@ -201,13 +209,13 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="md:col-span-4 row-span-1 relative group overflow-hidden rounded-[2rem]"
             >
-              <Link href={`/campaign/${MOCK_CAMPAIGNS[2]?.id || MOCK_CAMPAIGNS[1]?.id}`} className="block w-full h-full">
-                <img src={MOCK_CAMPAIGNS[2]?.coverImage || MOCK_CAMPAIGNS[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 2" />
+              <Link href={`/campaign/${campaigns[2]?.id || campaigns[1]?.id}`} className="block w-full h-full">
+                <img src={campaigns[2]?.coverImage || campaigns[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 2" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                  <span className="px-3 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-[10px] font-semibold text-white uppercase tracking-wider w-fit mb-3">{MOCK_CAMPAIGNS[2]?.category || 'Design'}</span>
-                  <h3 className="text-xl font-medium text-white mb-1">{MOCK_CAMPAIGNS[2]?.title || 'Next Gen Product'}</h3>
-                  <p className="text-white/60 text-sm line-clamp-2">{MOCK_CAMPAIGNS[2]?.tagline || 'A new way to experience everyday life.'}</p>
+                  <span className="px-3 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-[10px] font-semibold text-white uppercase tracking-wider w-fit mb-3">{campaigns[2]?.category || 'Design'}</span>
+                  <h3 className="text-xl font-medium text-white mb-1">{campaigns[2]?.title || 'Next Gen Product'}</h3>
+                  <p className="text-white/60 text-sm line-clamp-2">{campaigns[2]?.tagline || 'A new way to experience everyday life.'}</p>
                 </div>
               </Link>
             </motion.div>

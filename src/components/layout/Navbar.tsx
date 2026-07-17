@@ -18,26 +18,23 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  Rocket,
-  Wallet,
-  Settings,
-  LogOut,
-  LayoutDashboard,
-  Shield,
-  Menu,
-} from "lucide-react";
+import { Wallet, Settings, LogOut, LayoutDashboard, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function Navbar() {
-  const { data: session, isPending, error } = authClient.useSession();
-  const router = useRouter()
+  // Removed unused isPending and error variables
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
   let user = session?.user;
+  const role = (user as any)?.role?.toLowerCase();
+  const canStartCampaign = role === "admin" || role === "creator";
+  const pathname = usePathname();
 
-  const handleSingOut = async () => {
+  // Fixed typo: handleSingOut -> handleSignOut
+  const handleSignOut = async () => {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
@@ -92,26 +89,28 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-8">
           <Link
             href="/explore"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            className={`text-sm ${pathname === "/explore" ? "text-primary" : "text-muted-foreground"} font-medium hover:text-primary transition-colors`}
           >
             Explore
           </Link>
-          <Link
-            href="/campaigns"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-          >
-            Start a Campaign
-          </Link>
+          {canStartCampaign && (
+            <Link
+              href="/campaigns"
+              className={`text-sm font-medium ${pathname === "/campaigns" ? "text-primary" : "text-muted-foreground"} hover:text-primary transition-colors`}
+            >
+              Start a Campaign
+            </Link>
+          )}
           <Link
             href="/about"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            className={`text-sm font-medium ${pathname === "/about" ? "text-primary" : "text-muted-foreground"} hover:text-primary transition-colors`}
           >
             Our Story
           </Link>
           {session && (
             <Link
               href="/dashboard"
-              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full"
+              className={`text-sm font-medium ${pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"} hover:text-primary/80 transition-colors flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full`}
             >
               Dashboard
             </Link>
@@ -123,23 +122,28 @@ export function Navbar() {
 
           {!session ? (
             <div className="hidden md:flex gap-4">
-              <Link href="/login">
-                <Button variant="ghost" className="hover:bg-foreground/5">
-                  Log In
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button className="bg-primary hover:bg-primary/90 text-white shadow-[0_0_20px_rgba(var(--primary),0.3)]">
-                  Get Started
-                </Button>
-              </Link>
+              {/* Used router.push instead of nesting Link and Button to avoid hydration errors */}
+              <Button 
+                variant="ghost" 
+                className="hover:bg-foreground/5"
+                onClick={() => router.push("/login")}
+              >
+                Log In
+              </Button>
+              <Button 
+                className="bg-primary hover:bg-primary/90 text-white shadow-[0_0_20px_rgba(var(--primary),0.3)]"
+                onClick={() => router.push("/register")}
+              >
+                Get Started
+              </Button>
             </div>
           ) : (
             <div className="hidden md:block">
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center gap-2 outline-none cursor-pointer border-none bg-transparent p-0">
                   <Avatar className="h-10 w-10 border border-border dark:border-white/10 shadow-md transition-transform hover:scale-105">
-                    <AvatarImage src={user?.avatarUrl} />
+                    {/* Fixed 'avatarUrl' to use default 'image' and safely typecast custom fields */}
+                    <AvatarImage src={user?.image || (user as any)?.avatarUrl || ""} />
                     <AvatarFallback>
                       {user?.name?.charAt(0) || "U"}
                     </AvatarFallback>
@@ -188,7 +192,7 @@ export function Navbar() {
                   <DropdownMenuSeparator className="bg-border dark:bg-white/10" />
 
                   <DropdownMenuItem
-                    onClick={handleSingOut}
+                    onClick={handleSignOut}
                     className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
@@ -216,7 +220,7 @@ export function Navbar() {
                 {session && (
                   <div className="flex items-center gap-4 mb-4 pb-4 border-b border-border dark:border-white/10">
                     <Avatar className="h-12 w-12 border border-border dark:border-white/10">
-                      <AvatarImage src={user?.avatarUrl} />
+                      <AvatarImage src={user?.image || (user as any)?.avatarUrl || ""} />
                       <AvatarFallback>
                         {user?.name?.charAt(0) || "U"}
                       </AvatarFallback>
@@ -229,7 +233,8 @@ export function Navbar() {
                         {user?.email}
                       </span>
                       <span className="text-[10px] uppercase font-bold text-primary mt-1">
-                        {user?.role}
+                        {/* Safe fallback for custom 'role' field */}
+                        {(user as any)?.role || "USER"}
                       </span>
                     </div>
                   </div>
@@ -243,13 +248,15 @@ export function Navbar() {
                   >
                     Explore
                   </Link>
-                  <Link
-                    href="/campaigns"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-lg font-medium text-foreground hover:text-primary"
-                  >
-                    Start a Campaign
-                  </Link>
+                  {canStartCampaign && (
+                    <Link
+                      href="/campaigns"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-lg font-medium text-foreground hover:text-primary"
+                    >
+                      Start a Campaign
+                    </Link>
+                  )}
                   <Link
                     href="/about"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -278,7 +285,7 @@ export function Navbar() {
                       Settings
                     </Link>
                     <button
-                      onClick={handleSingOut}
+                      onClick={handleSignOut}
                       className="flex items-center gap-3 text-lg font-medium text-destructive mt-4 text-left"
                     >
                       <LogOut className="w-5 h-5" /> Log out
@@ -286,22 +293,26 @@ export function Navbar() {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-4 mt-auto pt-4 border-t border-border dark:border-white/10">
-                    <Link
-                      href="/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    {/* Fixed invalid HTML nesting for mobile buttons */}
+                    <Button 
+                      variant="outline" 
+                      className="w-full text-lg h-12"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        router.push("/login");
+                      }}
                     >
-                      <Button variant="outline" className="w-full text-lg h-12">
-                        Log In
-                      </Button>
-                    </Link>
-                    <Link
-                      href="/register"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      Log In
+                    </Button>
+                    <Button 
+                      className="w-full text-lg h-12 bg-primary hover:bg-primary/90 text-white"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        router.push("/register");
+                      }}
                     >
-                      <Button className="w-full text-lg h-12 bg-primary hover:bg-primary/90 text-white">
-                        Get Started
-                      </Button>
-                    </Link>
+                      Get Started
+                    </Button>
                   </div>
                 )}
               </SheetContent>

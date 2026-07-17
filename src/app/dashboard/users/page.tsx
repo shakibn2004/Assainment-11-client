@@ -1,9 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Shield, User as UserIcon } from "lucide-react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+} from "@/components/ui/dropdown-menu";
 
-const mockUsers = [
+const initialUsers = [
   {
     id: "USR-001",
     name: "Alex Johnson",
@@ -43,6 +56,27 @@ const mockUsers = [
 ];
 
 export default function UsersPage() {
+  const [users, setUsers] = useState(initialUsers);
+
+  const handleRoleChange = (id: string, newRole: string) => {
+    setUsers(users.map(user => 
+      user.id === id ? { ...user, role: newRole } : user
+    ));
+    toast.success(`Role updated to ${newRole}`);
+  };
+
+  const handleStatusChange = (id: string, newStatus: string) => {
+    setUsers(users.map(user => 
+      user.id === id ? { ...user, status: newStatus } : user
+    ));
+    toast.success(`Status updated to ${newStatus}`);
+  };
+
+  const handleDelete = (id: string) => {
+    setUsers(users.filter(user => user.id !== id));
+    toast.success("User deleted successfully");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -63,7 +97,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {mockUsers.map((user) => (
+              {users.map((user) => (
                 <tr key={user.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -95,9 +129,52 @@ export default function UsersPage() {
                     </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:bg-white/10 hover:text-foreground transition-colors outline-none cursor-pointer border-none bg-transparent p-0">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-black/90 border-white/10 backdrop-blur-xl">
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        </DropdownMenuGroup>
+                        
+                        <DropdownMenuSeparator className="bg-white/10" />
+                        
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-xs text-muted-foreground py-1">Change Role</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "Admin")}>
+                            Make Admin
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "Creator")}>
+                            Make Creator
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "Supporter")}>
+                            Make Supporter
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+
+                        <DropdownMenuSeparator className="bg-white/10" />
+                        
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-xs text-muted-foreground py-1">Change Status</DropdownMenuLabel>
+                          {user.status === "Active" ? (
+                            <DropdownMenuItem onClick={() => handleStatusChange(user.id, "Suspended")} className="text-yellow-500">
+                              Suspend User
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem onClick={() => handleStatusChange(user.id, "Active")} className="text-green-500">
+                              Activate User
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuGroup>
+                        
+                        <DropdownMenuSeparator className="bg-white/10" />
+                        
+                        <DropdownMenuItem onClick={() => handleDelete(user.id)} className="text-red-500">
+                          Delete User
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}

@@ -18,6 +18,10 @@ export const auth = betterAuth({
             role: {
                 type: "string",
                 required: false
+            },
+            status: {
+                type: "string",
+                required: false
             }
         }
     },

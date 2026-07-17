@@ -4,8 +4,27 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function StartCampaignPage() {
+  const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isPending) {
+      const role = (session?.user as any)?.role?.toLowerCase();
+      if (role !== "admin" && role !== "creator") {
+        router.push("/");
+      }
+    }
+  }, [session, isPending, router]);
+
+  if (isPending) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen pt-24 pb-12 overflow-hidden relative">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/20 blur-[100px] rounded-full pointer-events-none" />

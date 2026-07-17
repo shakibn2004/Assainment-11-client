@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation"; // Removed 'redirect' import
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -17,21 +17,23 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const userData = Object.fromEntries(formData.entries());
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      setIsLoading(false);
+      return;
+    }
 
-    const { email, password } = userData;
-
-    const { data, error } = await authClient.signIn.email(
+    // Removed unused 'const { data, error } = ' to prevent build errors
+    await authClient.signIn.email(
       {
-        email, // required
-        password, // required
+        email, 
+        password, 
         rememberMe: true,
-        callbackURL: redirect || "/dashboard",
+        callbackURL: "/dashboard", // Fixed 'redirect' function type error
       },
       {
         onSuccess: () => {
@@ -43,9 +45,11 @@ export default function LoginPage() {
         },
 
         onError: (ctx) => {
-          toast.success(ctx.error.message, {});
+          // Changed to toast.error and added setIsLoading(false)
+          toast.error(ctx.error.message, {});
+          setIsLoading(false);
         },
-      },
+      }
     );
   };
 

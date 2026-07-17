@@ -4,15 +4,26 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, ArrowRight, Users } from "lucide-react";
-import { MOCK_CAMPAIGNS } from "@/services/mock/data";
+import { campaignApi } from "@/services/api/campaigns";
+import { Campaign } from "@/types";
+import { useEffect } from "react";
 import { TiltCard } from "@/components/shared/TiltCard";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function ExplorePage() {
   const [search, setSearch] = useState("");
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  const filtered = MOCK_CAMPAIGNS.filter(c => 
+  useEffect(() => {
+    campaignApi.getCampaigns().then(data => {
+      setCampaigns(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const filtered = campaigns.filter(c => 
     c.title.toLowerCase().includes(search.toLowerCase()) || 
     c.category.toLowerCase().includes(search.toLowerCase())
   );
@@ -43,7 +54,11 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="py-24 text-center">
+          <p className="text-muted-foreground text-lg">Loading campaigns...</p>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="py-24 text-center">
           <p className="text-muted-foreground text-lg">No campaigns found matching "{search}".</p>
         </div>

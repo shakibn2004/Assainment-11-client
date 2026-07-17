@@ -2,11 +2,51 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Users, Eye, TrendingUp } from "lucide-react";
-import { MOCK_CAMPAIGNS } from "@/services/mock/data";
+import { DollarSign, Users, Eye, TrendingUp, Edit, Trash2 } from "lucide-react";
+import { campaignApi } from "@/services/api/campaigns";
+import { useEffect, useState } from "react";
+import { Campaign } from "@/types";
+import { authClient } from "@/lib/auth-client";
 
 export function CreatorDashboard() {
-  const activeCampaign = MOCK_CAMPAIGNS[0];
+  const { data: session } = authClient.useSession();
+  const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
+
+  const fetchCampaigns = () => {
+    if (session?.user?.id) {
+      campaignApi.getCampaignsByCreator(session.user.id).then(campaigns => {
+        if (campaigns.length > 0) {
+          setActiveCampaign(campaigns[0]);
+        } else {
+          setActiveCampaign(null);
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, [session?.user?.id]);
+
+  const handleDelete = async () => {
+    if (!activeCampaign) return;
+    if (confirm("Are you sure you want to delete this campaign?")) {
+      await campaignApi.deleteCampaign(activeCampaign.id);
+      fetchCampaigns();
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!activeCampaign) return;
+    const newTitle = prompt("Enter new title for campaign:", activeCampaign.title);
+    if (newTitle) {
+      await campaignApi.updateCampaign(activeCampaign.id, { title: newTitle });
+      fetchCampaigns();
+    }
+  };
+
+  if (!activeCampaign) return <div className="text-center py-12 text-muted-foreground">No active campaigns found.</div>;
+
   const progress = Math.min((activeCampaign.currentAmount / activeCampaign.goalAmount) * 100, 100);
 
   return (
@@ -59,7 +99,17 @@ export function CreatorDashboard() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <h3 className="text-lg font-semibold mb-6">Active Campaign</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-semibold">Active Campaign</h3>
+            <div className="flex gap-2">
+              <button onClick={handleEdit} className="p-2 hover:bg-white/10 rounded-md transition-colors text-muted-foreground hover:text-foreground">
+                <Edit className="w-4 h-4" />
+              </button>
+              <button onClick={handleDelete} className="p-2 hover:bg-red-500/20 rounded-md transition-colors text-muted-foreground hover:text-red-500">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
           
           <div className="flex gap-6">
             <div className="w-1/3 rounded-xl overflow-hidden border border-border dark:border-white/10 hidden md:block">

@@ -3,13 +3,20 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, CreditCard, Clock, Gift } from "lucide-react";
-import { MOCK_CAMPAIGNS } from "@/services/mock/data";
+import { campaignApi } from "@/services/api/campaigns";
+import { useEffect, useState } from "react";
+import { Campaign } from "@/types";
 import Link from "next/link";
 import { TiltCard } from "../shared/TiltCard";
 
 export function SupporterDashboard() {
-  // Mock backed campaigns
-  const backedCampaigns = MOCK_CAMPAIGNS.slice(1, 3);
+  const [backedCampaigns, setBackedCampaigns] = useState<Campaign[]>([]);
+
+  useEffect(() => {
+    campaignApi.getCampaigns().then(data => {
+      setBackedCampaigns(data.slice(1, 3));
+    });
+  }, []);
 
   return (
     <div className="space-y-8">
