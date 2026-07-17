@@ -8,10 +8,20 @@ import { campaignApi } from "@/services/api/campaigns";
 import { useEffect, useState } from "react";
 import { Campaign } from "@/types";
 import { authClient } from "@/lib/auth-client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function CreatorDashboard() {
   const { data: session } = authClient.useSession();
   const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
+
+  // Edit Modal State
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const fetchCampaigns = () => {
     if (session?.user?.id) {
@@ -32,17 +42,39 @@ export function CreatorDashboard() {
   const handleDelete = async () => {
     if (!activeCampaign) return;
     if (confirm("Are you sure you want to delete this campaign?")) {
-      await campaignApi.deleteCampaign(activeCampaign.id);
-      fetchCampaigns();
+      try {
+        await campaignApi.deleteCampaign(activeCampaign.id);
+        toast.success("Campaign deleted successfully.");
+        fetchCampaigns();
+      } catch (error) {
+        toast.error("Failed to delete campaign.");
+      }
     }
   };
 
-  const handleEdit = async () => {
+  const openEditModal = () => {
     if (!activeCampaign) return;
-    const newTitle = prompt("Enter new title for campaign:", activeCampaign.title);
-    if (newTitle) {
+    setNewTitle(activeCampaign.title);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!activeCampaign) return;
+    if (!newTitle.trim()) {
+      toast.error("Title cannot be empty.");
+      return;
+    }
+    
+    setIsUpdating(true);
+    try {
       await campaignApi.updateCampaign(activeCampaign.id, { title: newTitle });
+      toast.success("Campaign updated successfully.");
+      setIsEditDialogOpen(false);
       fetchCampaigns();
+    } catch (error) {
+      toast.error("Failed to update campaign.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -103,7 +135,7 @@ export function CreatorDashboard() {
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold">Active Campaign</h3>
             <div className="flex gap-2">
-              <button onClick={handleEdit} className="p-2 hover:bg-white/10 rounded-md transition-colors text-muted-foreground hover:text-foreground">
+              <button onClick={openEditModal} className="p-2 hover:bg-white/10 rounded-md transition-colors text-muted-foreground hover:text-foreground">
                 <Edit className="w-4 h-4" />
               </button>
               <button onClick={handleDelete} className="p-2 hover:bg-red-500/20 rounded-md transition-colors text-muted-foreground hover:text-red-500">
@@ -162,6 +194,39 @@ export function CreatorDashboard() {
           </div>
         </motion.div>
       </div>
+
+      {/* Edit Modal */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Active Campaign</DialogTitle>
+            <DialogDescription>
+              Make changes to your campaign here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="active-title" className="text-right">
+                Title
+              </Label>
+              <Input
+                id="active-title"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isUpdating}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit} disabled={isUpdating}>
+              {isUpdating ? "Saving..." : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
