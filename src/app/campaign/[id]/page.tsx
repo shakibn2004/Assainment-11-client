@@ -11,6 +11,7 @@ import { Users, Clock, Target, ArrowLeft, Share2, Heart } from "lucide-react";
 import Link from "next/link";
 import { TiltCard } from "@/components/shared/TiltCard";
 import { LoadingScreen } from "@/components/shared/Spinner";
+import { toast } from "sonner";
 
 export default function CampaignDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -171,9 +172,10 @@ export default function CampaignDetailsPage({ params }: { params: Promise<{ id: 
 
                   <Button 
                     onClick={() => document.getElementById('rewards-section')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full h-14 text-lg font-bold rounded-xl shadow-[0_0_30px_rgba(var(--primary),0.3)] hover:shadow-[0_0_50px_rgba(var(--primary),0.5)] transition-shadow"
+                    disabled={campaign.status !== 'ACTIVE'}
+                    className="w-full h-14 text-lg font-bold rounded-xl shadow-[0_0_30px_rgba(var(--primary),0.3)] hover:shadow-[0_0_50px_rgba(var(--primary),0.5)] transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Back this project
+                    {campaign.status === 'ACTIVE' ? 'Back this project' : 'Not accepting payments'}
                   </Button>
                   
                   <p className="text-xs text-center text-muted-foreground">
@@ -185,16 +187,17 @@ export default function CampaignDetailsPage({ params }: { params: Promise<{ id: 
               {/* Rewards List */}
               <div id="rewards-section" className="space-y-4 pt-4">
                 <h3 className="text-xl font-bold mb-4 px-2">Select a Reward</h3>
-                {campaign.rewards.map((reward, i) => (
-                  <Link href={`/checkout/${campaign.id}?reward=${reward.id}`} key={reward.id} className="block">
+                {campaign.rewards.map((reward, i) => {
+                  const isActive = campaign.status === 'ACTIVE';
+                  const rewardCard = (
                     <motion.div
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.3 + (i * 0.1) }}
-                      className="glass-card p-6 border border-white/5 hover:border-primary/50 cursor-pointer group transition-colors"
+                      className={`glass-card p-6 border border-white/5 transition-colors ${isActive ? 'hover:border-primary/50 cursor-pointer group' : 'opacity-50 cursor-not-allowed'}`}
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-bold group-hover:text-primary transition-colors">{reward.title}</h4>
+                        <h4 className={`text-lg font-bold transition-colors ${isActive ? 'group-hover:text-primary' : ''}`}>{reward.title}</h4>
                         <span className="text-xl font-bold text-primary">${reward.amount}</span>
                       </div>
                       <p className="text-sm text-muted-foreground mb-4">{reward.description}</p>
@@ -209,8 +212,18 @@ export default function CampaignDetailsPage({ params }: { params: Promise<{ id: 
                         </div>
                       </div>
                     </motion.div>
-                  </Link>
-                ))}
+                  );
+
+                  return isActive ? (
+                    <Link href={`/checkout/${campaign.id}?reward=${reward.id}`} key={reward.id} className="block">
+                      {rewardCard}
+                    </Link>
+                  ) : (
+                    <div key={reward.id} className="block" onClick={() => toast.error("This campaign is not active yet.")}>
+                      {rewardCard}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

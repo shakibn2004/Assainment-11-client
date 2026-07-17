@@ -69,8 +69,18 @@ export default function CheckoutPage({
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Left Column: Payment Form */}
-          <div className="flex-1 space-y-8">
+          {campaign.status !== 'ACTIVE' ? (
+            <div className="flex-1 text-center py-24 glass-card">
+              <h2 className="text-2xl font-bold mb-4">This campaign is not active</h2>
+              <p className="text-muted-foreground mb-8">You cannot process payments for a campaign that is currently {campaign.status.toLowerCase()}.</p>
+              <Link href={`/campaign/${campaign.id}`} className="bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors">
+                Return to Campaign
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Left Column: Payment Form */}
+              <div className="flex-1 space-y-8">
             <div>
               <h1 className="text-3xl font-bold mb-2">
                 Complete your contribution
@@ -231,12 +241,14 @@ export default function CheckoutPage({
                 <span className="text-2xl font-bold text-primary">$214.00</span>
               </div>
 
-              <p className="text-xs text-muted-foreground text-center">
-                By confirming your payment, you agree to SparkLift's Terms of
-                Use and Privacy Policy.
-              </p>
+                <p className="text-xs text-muted-foreground text-center">
+                  By confirming your payment, you agree to SparkLift's Terms of
+                  Use and Privacy Policy.
+                </p>
+              </div>
             </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>
