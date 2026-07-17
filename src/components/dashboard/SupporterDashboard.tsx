@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, CreditCard, Clock, Gift } from "lucide-react";
 import { campaignApi } from "@/services/api/campaigns";
@@ -71,7 +72,7 @@ export function SupporterDashboard() {
                 <TiltCard className="h-full">
                   <div className="flex flex-col sm:flex-row gap-6">
                     <div className="w-full sm:w-1/3 h-32 rounded-lg overflow-hidden shrink-0">
-                      <img src={campaign.coverImage} alt={campaign.title} className="w-full h-full object-cover" />
+                      <Image width={800} height={600} src={campaign.coverImage} alt={campaign.title} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                       <div>

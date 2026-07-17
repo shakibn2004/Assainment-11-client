@@ -66,8 +66,8 @@ export default function ApprovalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Pending Approvals</h1>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pending Approvals</h1>
         <Badge variant="secondary" className="px-3 py-1 text-sm bg-primary/20 text-primary">
           {approvals.length} in Queue
         </Badge>

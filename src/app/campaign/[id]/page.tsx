@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import Image from "next/image";
 import { campaignApi } from "@/services/api/campaigns";
 import { Campaign } from "@/types";
 import { notFound } from "next/navigation";
@@ -32,11 +33,9 @@ export default function CampaignDetailsPage({ params }: { params: Promise<{ id: 
       <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden">
         <div className="absolute inset-0 bg-black/40 z-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10" />
-        <img 
-          src={campaign.coverImage} 
+        <Image width={800} height={600} src={campaign.coverImage} 
           alt={campaign.title}
-          className="absolute inset-0 w-full h-full object-cover scale-105"
-        />
+          className="absolute inset-0 w-full h-full object-cover scale-105" />
         
         <div className="absolute inset-0 z-20 flex flex-col justify-end pb-12">
           <div className="container mx-auto px-4">
@@ -122,7 +121,7 @@ export default function CampaignDetailsPage({ params }: { params: Promise<{ id: 
                 <div className="mt-8 space-y-6 text-muted-foreground">
                   <p>Our team has spent the last 18 months perfecting the engineering and design. We didn't want to just make another product; we wanted to create a paradigm shift in how people interact with this category.</p>
                   <div className="my-12 rounded-xl overflow-hidden border border-white/10">
-                    <img src={campaign.coverImage} className="w-full h-[400px] object-cover" alt="Detail view" />
+                    <Image width={800} height={600} src={campaign.coverImage} className="w-full h-[400px] object-cover" alt="Detail view" />
                   </div>
                   <h4 className="text-xl font-bold text-foreground">Why we need your help</h4>
                   <p>Manufacturing at scale requires significant upfront capital for tooling and minimum order quantities. By backing us now, you are not just pre-ordering a product, you are bringing this vision to reality.</p>

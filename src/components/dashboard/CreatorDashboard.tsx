@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Users, Eye, TrendingUp, Edit, Trash2 } from "lucide-react";
 import { campaignApi } from "@/services/api/campaigns";
@@ -113,7 +114,7 @@ export function CreatorDashboard() {
           
           <div className="flex gap-6">
             <div className="w-1/3 rounded-xl overflow-hidden border border-border dark:border-white/10 hidden md:block">
-              <img src={activeCampaign.coverImage} alt={activeCampaign.title} className="w-full h-full object-cover" />
+              <Image width={800} height={600} src={activeCampaign.coverImage} alt={activeCampaign.title} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 space-y-4">
               <h4 className="text-xl font-bold">{activeCampaign.title}</h4>

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { TrendingUp, ShieldCheck, Play, ArrowUpRight } from "lucide-react";
@@ -113,7 +114,7 @@ export default function LandingPage() {
                 transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute top-10 right-0 w-[300px] h-[400px] rounded-[2rem] overflow-hidden border border-border dark:border-white/10 shadow-2xl z-20"
               >
-                <img src={campaigns[0]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 1" />
+                <Image width={800} height={600} src={campaigns[0]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 1" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <p className="text-white font-bold text-lg leading-tight mb-1">{campaigns[0]?.title}</p>
@@ -127,7 +128,7 @@ export default function LandingPage() {
                 transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute bottom-0 left-0 w-[280px] h-[350px] rounded-[2rem] overflow-hidden border border-border dark:border-white/10 shadow-2xl z-10 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 hover:z-30 transition-all duration-700"
               >
-                <img src={campaigns[1]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 2" />
+                <Image width={800} height={600} src={campaigns[1]?.coverImage} className="w-full h-full object-cover scale-110" alt="Featured 2" />
               </motion.div>
             </motion.div>
             
@@ -159,7 +160,7 @@ export default function LandingPage() {
               className="md:col-span-8 row-span-2 relative group overflow-hidden rounded-[2rem]"
             >
               <Link href={`/campaign/${campaigns[0]?.id}`} className="block w-full h-full">
-                <img src={campaigns[0]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Main Feature" />
+                <Image width={800} height={600} src={campaigns[0]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Main Feature" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 p-10 flex flex-col justify-end">
                   <div className="flex items-center gap-3 mb-4">
@@ -191,7 +192,7 @@ export default function LandingPage() {
               className="md:col-span-4 row-span-1 relative group overflow-hidden rounded-[2rem]"
             >
               <Link href={`/campaign/${campaigns[1]?.id}`} className="block w-full h-full">
-                <img src={campaigns[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 1" />
+                <Image width={800} height={600} src={campaigns[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 1" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
                   <span className="px-3 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-[10px] font-semibold text-white uppercase tracking-wider w-fit mb-3">{campaigns[1]?.category}</span>
@@ -210,7 +211,7 @@ export default function LandingPage() {
               className="md:col-span-4 row-span-1 relative group overflow-hidden rounded-[2rem]"
             >
               <Link href={`/campaign/${campaigns[2]?.id || campaigns[1]?.id}`} className="block w-full h-full">
-                <img src={campaigns[2]?.coverImage || campaigns[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 2" />
+                <Image width={800} height={600} src={campaigns[2]?.coverImage || campaigns[1]?.coverImage} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Sub Feature 2" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
                   <span className="px-3 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-[10px] font-semibold text-white uppercase tracking-wider w-fit mb-3">{campaigns[2]?.category || 'Design'}</span>

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { use, useEffect, useState } from "react";
 import { campaignApi } from "@/services/api/campaigns";
@@ -185,11 +186,9 @@ export default function CheckoutPage({
 
               <div className="flex gap-4 mb-6 pb-6 border-b border-border dark:border-white/10">
                 <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
-                  <img
-                    src={campaign.coverImage}
+                  <Image width={800} height={600} src={campaign.coverImage}
                     className="w-full h-full object-cover"
-                    alt="Campaign"
-                  />
+                    alt="Campaign" />
                 </div>
                 <div>
                   <p className="font-semibold text-sm line-clamp-2">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, ArrowRight, Users } from "lucide-react";
@@ -73,11 +74,9 @@ export default function ExplorePage() {
               <Link href={`/campaign/${campaign.id}`}>
                 <TiltCard className="h-full flex flex-col">
                   <div className="relative h-56 -mx-6 -mt-6 mb-6 overflow-hidden rounded-t-2xl border-b border-white/5">
-                    <img 
-                      src={campaign.coverImage} 
+                    <Image width={800} height={600} src={campaign.coverImage} 
                       alt={campaign.title}
-                      className="object-cover w-full h-full transition-transform duration-700 hover:scale-110"
-                    />
+                      className="object-cover w-full h-full transition-transform duration-700 hover:scale-110" />
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-black/50 backdrop-blur-md text-white border border-white/10">
                         {campaign.category}

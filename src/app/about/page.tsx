@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Rocket, Target, Globe, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -51,9 +52,11 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="rounded-2xl overflow-hidden border border-white/10"
           >
-            <img 
+            <Image 
               src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop" 
               alt="Team collaborating" 
+              width={2070}
+              height={1380}
               className="w-full h-full object-cover"
             />
           </motion.div>

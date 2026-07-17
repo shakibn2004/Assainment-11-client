@@ -71,8 +71,11 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Platform Users</h2>
+          <p className="text-muted-foreground mt-1">Manage and monitor platform members.</p>
+        </div>
         <Button className="bg-primary hover:bg-primary/90 text-white">Export CSV</Button>
       </div>
 

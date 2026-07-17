@@ -48,7 +48,7 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full glass border-b border-border dark:border-white/10">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+      <div className="container mx-auto px-3 sm:px-4 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
             <div className="absolute inset-0 bg-gradient-to-tr from-primary to-accent rounded-full opacity-30 group-hover:opacity-70 blur-md transition-opacity duration-500 animate-pulse"></div>
@@ -77,7 +77,7 @@ export function Navbar() {
               />
             </svg>
           </div>
-          <span className="text-2xl font-sans tracking-tight flex items-center">
+          <span className="text-xl sm:text-2xl font-sans tracking-tight flex items-center">
             <span className="font-medium text-foreground">Spark</span>
             <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               Lift

@@ -136,7 +136,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex-1 flex flex-col bg-background relative">
-      <div className="md:hidden sticky top-20 z-40 w-full glass border-b border-border dark:border-white/10 px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden sticky top-20 z-40 w-full glass border-b border-border dark:border-white/10 px-3 sm:px-4 py-3 flex items-center justify-between">
         <span className="font-semibold text-foreground">Dashboard</span>
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger className="h-8 px-3 flex items-center justify-center rounded-md hover:bg-foreground/10 transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20">
@@ -158,7 +158,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {renderNavContent()}
         </aside>
 
-        <main className="flex-1 p-4 md:p-10 overflow-y-auto h-[calc(100vh-5rem-3.5rem)] md:h-auto">
+        <main className="flex-1 p-3 sm:p-4 md:p-10 overflow-y-auto h-[calc(100vh-5rem-3.5rem)] md:h-auto min-w-0">
           <div className="max-w-6xl mx-auto">{children}</div>
         </main>
       </div>

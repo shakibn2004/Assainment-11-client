@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -221,7 +222,7 @@ export default function CreateCampaignForm() {
                         </div>
                       ) : coverImage ? (
                         <div className="relative w-full h-full">
-                          <img src={coverImage} alt="Cover preview" className="w-full h-full object-cover max-h-[300px]" />
+                          <Image width={800} height={600} src={coverImage} alt="Cover preview" className="w-full h-full object-cover max-h-[300px]" />
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                             <Button 
                               type="button"

@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MapPin, Link as LinkIcon, Calendar, Edit3 } from "lucide-react";
 import { campaignApi } from "@/services/api/campaigns";
@@ -219,7 +220,7 @@ export default function ProfilePage() {
                 <Link key={campaign.id} href={`/campaign/${campaign.id}`}>
                   <TiltCard>
                     <div className="relative h-40 -mx-6 -mt-6 mb-4 overflow-hidden rounded-t-2xl border-b border-white/5">
-                      <img src={campaign.coverImage} className="w-full h-full object-cover" alt={campaign.title} />
+                      <Image width={800} height={600} src={campaign.coverImage} className="w-full h-full object-cover" alt={campaign.title} />
                     </div>
                     <h3 className="font-bold mb-1">{campaign.title}</h3>
                     <p className="text-xs text-muted-foreground mb-4 line-clamp-1">{campaign.tagline}</p>
