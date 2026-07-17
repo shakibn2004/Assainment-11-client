@@ -84,10 +84,10 @@ export default function ProfilePage() {
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">{user.name}</h1>
                 <Dialog open={isEditing} onOpenChange={setIsEditing}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="glass border-white/10">
-                      <Edit3 className="w-4 h-4 mr-2" /> Edit Profile
-                    </Button>
+                  <DialogTrigger 
+                    render={<Button variant="outline" className="glass border-white/10" />}
+                  >
+                    <Edit3 className="w-4 h-4 mr-2" /> Edit Profile
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-white/10">
                     <DialogHeader>
