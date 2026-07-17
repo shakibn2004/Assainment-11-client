@@ -26,6 +26,8 @@ export interface Campaign {
   rewards: Reward[];
   story: string;
   featured?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Reward {

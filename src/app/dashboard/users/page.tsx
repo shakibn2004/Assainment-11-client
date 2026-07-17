@@ -22,6 +22,8 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
+  console.log(users);
+
   useEffect(() => {
     fetchUsers();
   }, []);

@@ -1,6 +1,6 @@
 import { getAuthToken } from "@/lib/auth-utils";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_LOCAL_URI || 'http://localhost:8000';
 
 export interface User {
   id: string;
@@ -20,33 +20,40 @@ export const usersApi = {
 
       const res = await fetch(`${API_URL}/users`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      if (!res.ok) throw new Error('Failed to fetch users');
+      if (!res.ok) {
+        const err = await res.text();
+        console.error("Server error fetching users:", res.status, err);
+        throw new Error(`Failed to fetch users: ${res.status}`);
+      }
       return res.json();
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users (frontend):", error);
       return [];
     }
   },
 
-  updateUser: async (id: string, data: { role?: string; status?: string }): Promise<boolean> => {
+  updateUser: async (
+    id: string,
+    data: { role?: string; status?: string },
+  ): Promise<boolean> => {
     try {
       const token = await getAuthToken();
       if (!token) throw new Error("No auth token");
 
       const res = await fetch(`${API_URL}/users/${id}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
       return res.ok;
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error("Error updating user:", error);
       return false;
     }
   },
@@ -57,15 +64,15 @@ export const usersApi = {
       if (!token) throw new Error("No auth token");
 
       const res = await fetch(`${API_URL}/users/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       return res.ok;
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
       return false;
     }
-  }
+  },
 };
