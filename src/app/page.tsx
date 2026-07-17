@@ -71,7 +71,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="text-6xl sm:text-7xl lg:text-[7.5rem] font-medium leading-[0.9] tracking-[-0.04em] mb-8 text-foreground dark:text-white"
+                className="text-5xl sm:text-7xl lg:text-[7.5rem] font-medium leading-[0.9] tracking-[-0.04em] mb-8 text-foreground dark:text-white"
               >
                 Fund the<br/>
                 <span className="italic font-serif text-foreground/50 dark:text-white/50">Extraordinary.</span>
@@ -92,10 +92,10 @@ export default function LandingPage() {
                 transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-col sm:flex-row gap-5"
               >
-                <Button size="lg" className="h-16 px-10 rounded-full bg-foreground text-background hover:bg-foreground/90 dark:bg-white dark:text-black dark:hover:bg-white/90 text-lg font-medium transition-transform hover:scale-105 active:scale-95">
+                <Button size="lg" className="h-14 sm:h-16 px-6 sm:px-10 rounded-full bg-foreground text-background hover:bg-foreground/90 dark:bg-white dark:text-black dark:hover:bg-white/90 text-base sm:text-lg font-medium transition-transform hover:scale-105 active:scale-95">
                   <Link href="/explore">Explore Collection</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="h-16 px-8 rounded-full border-foreground/20 text-foreground hover:bg-foreground/10 dark:border-white/20 dark:text-white dark:hover:bg-white/10 dark:hover:text-white glass text-lg font-medium">
+                <Button size="lg" variant="outline" className="h-14 sm:h-16 px-6 sm:px-8 rounded-full border-foreground/20 text-foreground hover:bg-foreground/10 dark:border-white/20 dark:text-white dark:hover:bg-white/10 dark:hover:text-white glass text-base sm:text-lg font-medium">
                   <Link href="/campaigns/create" className="flex items-center gap-2">
                     <Play className="w-4 h-4" /> View Showcase
                   </Link>
