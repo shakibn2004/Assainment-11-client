@@ -7,6 +7,7 @@ import { campaignApi } from "@/services/api/campaigns";
 import { Campaign } from "@/types";
 import { useEffect, useState } from "react";
 import { TiltCard } from "@/components/shared/TiltCard";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -18,9 +19,10 @@ import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const router = useRouter(); // Initialize router
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
+  if (isPending) return <div className="min-h-screen pt-24"><LoadingScreen text="Loading Profile..." /></div>;
   if (!user) return <div className="min-h-screen pt-24 text-center">Please log in to view profile.</div>;
 
   const [userCampaigns, setUserCampaigns] = useState<Campaign[]>([]);

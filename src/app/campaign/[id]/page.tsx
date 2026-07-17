@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Clock, Target, ArrowLeft, Share2, Heart } from "lucide-react";
 import Link from "next/link";
 import { TiltCard } from "@/components/shared/TiltCard";
+import { LoadingScreen } from "@/components/shared/Spinner";
 
 export default function CampaignDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -21,7 +22,7 @@ export default function CampaignDetailsPage({ params }: { params: Promise<{ id: 
     });
   }, [resolvedParams.id]);
 
-  if (!campaign) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 rounded-full border-t-2 border-primary animate-spin"></div></div>;
+  if (!campaign) return <LoadingScreen text="Loading campaign details..." />;
 
   const progress = Math.min((campaign.currentAmount / campaign.goalAmount) * 100, 100);
 

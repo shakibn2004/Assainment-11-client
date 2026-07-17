@@ -7,6 +7,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 
 export default function StartCampaignPage() {
   const { data: session, isPending } = authClient.useSession();
@@ -22,7 +23,7 @@ export default function StartCampaignPage() {
   }, [session, isPending, router]);
 
   if (isPending) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingScreen text="Loading..." />;
   }
 
   return (

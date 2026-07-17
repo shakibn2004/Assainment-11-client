@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { TiltCard } from "@/components/shared/TiltCard";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LoadingScreen } from "@/components/shared/Spinner";
 
 export default function ExplorePage() {
   const [search, setSearch] = useState("");
@@ -55,9 +56,7 @@ export default function ExplorePage() {
       </div>
 
       {loading ? (
-        <div className="py-24 text-center">
-          <p className="text-muted-foreground text-lg">Loading campaigns...</p>
-        </div>
+        <LoadingScreen text="Loading campaigns..." />
       ) : filtered.length === 0 ? (
         <div className="py-24 text-center">
           <p className="text-muted-foreground text-lg">No campaigns found matching "{search}".</p>
