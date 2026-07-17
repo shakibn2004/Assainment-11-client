@@ -130,6 +130,7 @@ export default function CampaignsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge variant="outline" className={`
                         ${camp.status === 'ACTIVE' ? 'border-green-500 text-green-500' : ''}
+                        ${camp.status === 'PENDING' ? 'border-orange-500 text-orange-500' : ''}
                         ${camp.status === 'DRAFT' ? 'border-yellow-500 text-yellow-500' : ''}
                         ${camp.status === 'COMPLETED' ? 'border-blue-500 text-blue-500' : ''}
                       `}>

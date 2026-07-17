@@ -22,7 +22,7 @@ export interface Campaign {
   currentAmount: number;
   backersCount: number;
   daysLeft: number;
-  status: "ACTIVE" | "COMPLETED" | "DRAFT" | "REJECTED";
+  status: "ACTIVE" | "COMPLETED" | "DRAFT" | "REJECTED" | "PENDING";
   rewards: Reward[];
   story: string;
   featured?: boolean;

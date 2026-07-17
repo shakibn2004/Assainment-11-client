@@ -65,7 +65,7 @@ export const campaignApi = {
         ...data,
         currentAmount: 0,
         backersCount: 0,
-        status: "DRAFT",
+        status: "PENDING",
       }),
     });
     if (!res.ok) throw new Error('Failed to create campaign');
