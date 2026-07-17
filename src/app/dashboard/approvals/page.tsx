@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, X, Search, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { campaignApi } from "@/services/api/campaigns";
+import { Campaign } from "@/types";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import {
   Dialog,
   DialogContent,
@@ -15,59 +18,50 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const initialApprovals = [
-  {
-    id: "APP-4091",
-    title: "Quantum Keyboard: The Future of Typing",
-    creator: "TechNova Inc.",
-    goal: 50000,
-    submittedAt: "2 hours ago",
-    risk: "Low",
-    description: "A revolutionary new mechanical keyboard with customizable magnetic switches and a programmable OLED screen. Perfect for developers and gamers alike.",
-    category: "Technology",
-  },
-  {
-    id: "APP-4092",
-    title: "Solaris: Portable Solar Generator",
-    creator: "EcoPower",
-    goal: 150000,
-    submittedAt: "5 hours ago",
-    risk: "Medium",
-    description: "Compact and powerful, Solaris provides 2000W of clean energy on the go. Great for camping, emergencies, or off-grid living.",
-    category: "Design & Tech",
-  },
-  {
-    id: "APP-4093",
-    title: "Mystic Valley: Board Game",
-    creator: "Tabletop Legends",
-    goal: 15000,
-    submittedAt: "1 day ago",
-    risk: "Low",
-    description: "A strategic worker-placement game set in a fantasy valley. Gather resources, build magical structures, and earn victory points to win.",
-    category: "Games",
-  }
-];
-
 export default function ApprovalsPage() {
-  const [approvals, setApprovals] = useState(initialApprovals);
+  const [approvals, setApprovals] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedApproval, setSelectedApproval] = useState<typeof initialApprovals[0] | null>(null);
+  const [selectedApproval, setSelectedApproval] = useState<Campaign | null>(null);
 
-  const handleApprove = (id: string, title: string) => {
-    setApprovals(approvals.filter(app => app.id !== id));
-    toast.success(`Approved campaign: ${title}`);
-    if (selectedApproval?.id === id) setSelectedApproval(null);
+  useEffect(() => {
+    fetchApprovals();
+  }, []);
+
+  const fetchApprovals = async () => {
+    setLoading(true);
+    const data = await campaignApi.getCampaigns({ status: 'PENDING' });
+    setApprovals(data);
+    setLoading(false);
   };
 
-  const handleReject = (id: string, title: string) => {
-    setApprovals(approvals.filter(app => app.id !== id));
-    toast.error(`Rejected campaign: ${title}`);
-    if (selectedApproval?.id === id) setSelectedApproval(null);
+  const handleApprove = async (id: string, title: string) => {
+    try {
+      await campaignApi.updateCampaign(id, { status: 'ACTIVE' });
+      setApprovals(approvals.filter(app => app.id !== id));
+      toast.success(`Approved campaign: ${title}`);
+      if (selectedApproval?.id === id) setSelectedApproval(null);
+    } catch (error) {
+      toast.error(`Failed to approve campaign`);
+    }
   };
+
+  const handleReject = async (id: string, title: string) => {
+    try {
+      await campaignApi.updateCampaign(id, { status: 'REJECTED' });
+      setApprovals(approvals.filter(app => app.id !== id));
+      toast.error(`Rejected campaign: ${title}`);
+      if (selectedApproval?.id === id) setSelectedApproval(null);
+    } catch (error) {
+      toast.error(`Failed to reject campaign`);
+    }
+  };
+
+  if (loading) return <LoadingScreen text="Loading pending approvals..." />;
 
   const filteredApprovals = approvals.filter(app => 
     app.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    app.creator.toLowerCase().includes(searchQuery.toLowerCase())
+    app.creatorName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -115,20 +109,20 @@ export default function ApprovalsPage() {
                   <tr key={item.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4">
                       <p className="font-semibold text-foreground mb-1">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">{item.creator}</p>
+                      <p className="text-xs text-muted-foreground">{item.creatorName}</p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">
-                      ${item.goal.toLocaleString()}
+                      ${item.goalAmount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-muted-foreground text-xs">
-                      {item.submittedAt}
+                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Just now'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge variant="outline" className={`
-                        ${item.risk === 'Low' ? 'border-green-500 text-green-500' : ''}
-                        ${item.risk === 'Medium' ? 'border-yellow-500 text-yellow-500' : ''}
+                        ${(item.goalAmount || 0) < 5000 ? 'border-green-500 text-green-500' : ''}
+                        ${(item.goalAmount || 0) >= 5000 ? 'border-yellow-500 text-yellow-500' : ''}
                       `}>
-                        {item.risk}
+                        {(item.goalAmount || 0) < 5000 ? 'Low' : 'Medium'}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right space-x-2 flex items-center justify-end">
@@ -178,7 +172,7 @@ export default function ApprovalsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs text-muted-foreground uppercase font-medium tracking-wider mb-1">Creator</p>
-                  <p className="font-medium text-sm">{selectedApproval.creator}</p>
+                  <p className="font-medium text-sm">{selectedApproval.creatorName}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground uppercase font-medium tracking-wider mb-1">Category</p>
@@ -186,15 +180,15 @@ export default function ApprovalsPage() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground uppercase font-medium tracking-wider mb-1">Funding Goal</p>
-                  <p className="font-medium text-sm">${selectedApproval.goal.toLocaleString()}</p>
+                  <p className="font-medium text-sm">${selectedApproval.goalAmount.toLocaleString()}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground uppercase font-medium tracking-wider mb-1">Risk Assessment</p>
                   <Badge variant="outline" className={`
-                    ${selectedApproval.risk === 'Low' ? 'border-green-500 text-green-500' : ''}
-                    ${selectedApproval.risk === 'Medium' ? 'border-yellow-500 text-yellow-500' : ''}
+                    ${(selectedApproval.goalAmount || 0) < 5000 ? 'border-green-500 text-green-500' : ''}
+                    ${(selectedApproval.goalAmount || 0) >= 5000 ? 'border-yellow-500 text-yellow-500' : ''}
                   `}>
-                    {selectedApproval.risk}
+                    {(selectedApproval.goalAmount || 0) < 5000 ? 'Low' : 'Medium'}
                   </Badge>
                 </div>
               </div>

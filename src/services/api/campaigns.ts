@@ -4,9 +4,13 @@ import { Campaign } from "@/types";
 const API_URL = process.env.NEXT_PUBLIC_LOCAL_URI || 'http://localhost:8000';
 
 export const campaignApi = {
-  getCampaigns: async (): Promise<Campaign[]> => {
+  getCampaigns: async (filters?: { status?: string }): Promise<Campaign[]> => {
     try {
-      const res = await fetch(`${API_URL}/campaigns`);
+      let url = `${API_URL}/campaigns`;
+      if (filters?.status) {
+        url += `?status=${filters.status}`;
+      }
+      const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch campaigns');
       return await res.json();
     } catch (error) {

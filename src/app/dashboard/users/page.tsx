@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Shield, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
+import { usersApi, User } from "@/services/api/users";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,66 +18,56 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 
-const initialUsers = [
-  {
-    id: "USR-001",
-    name: "Alex Johnson",
-    email: "alex@example.com",
-    role: "Creator",
-    joined: "Mar 12, 2026",
-    status: "Active",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d"
-  },
-  {
-    id: "USR-002",
-    name: "Sarah Williams",
-    email: "sarah.w@example.com",
-    role: "Supporter",
-    joined: "Apr 05, 2026",
-    status: "Active",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d"
-  },
-  {
-    id: "USR-003",
-    name: "TechNova Inc.",
-    email: "contact@technova.io",
-    role: "Creator",
-    joined: "Jan 22, 2026",
-    status: "Suspended",
-    avatar: ""
-  },
-  {
-    id: "USR-004",
-    name: "Marcus Aurelius",
-    email: "admin@fundbridge.com",
-    role: "Admin",
-    joined: "Jan 01, 2026",
-    status: "Active",
-    avatar: "https://i.pravatar.cc/150?u=a04258a2462d826712d"
-  }
-];
-
 export default function UsersPage() {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleRoleChange = (id: string, newRole: string) => {
-    setUsers(users.map(user => 
-      user.id === id ? { ...user, role: newRole } : user
-    ));
-    toast.success(`Role updated to ${newRole}`);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    const data = await usersApi.getUsers();
+    setUsers(data);
+    setLoading(false);
   };
 
-  const handleStatusChange = (id: string, newStatus: string) => {
-    setUsers(users.map(user => 
-      user.id === id ? { ...user, status: newStatus } : user
-    ));
-    toast.success(`Status updated to ${newStatus}`);
+  const handleRoleChange = async (id: string, newRole: string) => {
+    const success = await usersApi.updateUser(id, { role: newRole });
+    if (success) {
+      setUsers(users.map(user => 
+        user.id === id ? { ...user, role: newRole } : user
+      ));
+      toast.success(`Role updated to ${newRole}`);
+    } else {
+      toast.error("Failed to update role");
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setUsers(users.filter(user => user.id !== id));
-    toast.success("User deleted successfully");
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    const success = await usersApi.updateUser(id, { status: newStatus });
+    if (success) {
+      setUsers(users.map(user => 
+        user.id === id ? { ...user, status: newStatus } : user
+      ));
+      toast.success(`Status updated to ${newStatus}`);
+    } else {
+      toast.error("Failed to update status");
+    }
   };
+
+  const handleDelete = async (id: string) => {
+    const success = await usersApi.deleteUser(id);
+    if (success) {
+      setUsers(users.filter(user => user.id !== id));
+      toast.success("User deleted successfully");
+    } else {
+      toast.error("Failed to delete user");
+    }
+  };
+
+  if (loading) return <LoadingScreen text="Loading users..." />;
 
   return (
     <div className="space-y-6">
@@ -102,8 +94,8 @@ export default function UsersPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar} />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={user.image || ""} />
+                        <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium text-foreground">{user.name}</p>
@@ -113,19 +105,19 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
-                      {user.role === 'Admin' ? <Shield className="w-3.5 h-3.5 text-primary" /> : <UserIcon className="w-3.5 h-3.5" />}
-                      <span>{user.role}</span>
+                      {user.role === 'admin' ? <Shield className="w-3.5 h-3.5 text-primary" /> : <UserIcon className="w-3.5 h-3.5" />}
+                      <span className="capitalize">{user.role || 'user'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-muted-foreground text-sm">
-                    {user.joined}
+                    {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Badge variant="outline" className={`
-                      ${user.status === 'Active' ? 'border-green-500/50 text-green-500' : ''}
-                      ${user.status === 'Suspended' ? 'border-red-500/50 text-red-500' : ''}
+                      ${user.status === 'active' || !user.status ? 'border-green-500/50 text-green-500' : ''}
+                      ${user.status === 'suspended' ? 'border-red-500/50 text-red-500' : ''}
                     `}>
-                      {user.status}
+                      <span className="capitalize">{user.status || 'Active'}</span>
                     </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -142,13 +134,13 @@ export default function UsersPage() {
                         
                         <DropdownMenuGroup>
                           <DropdownMenuLabel className="text-xs text-muted-foreground py-1">Change Role</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "Admin")}>
+                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "admin")}>
                             Make Admin
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "Creator")}>
+                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "creator")}>
                             Make Creator
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "Supporter")}>
+                          <DropdownMenuItem onClick={() => handleRoleChange(user.id, "supporter")}>
                             Make Supporter
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
@@ -157,12 +149,12 @@ export default function UsersPage() {
                         
                         <DropdownMenuGroup>
                           <DropdownMenuLabel className="text-xs text-muted-foreground py-1">Change Status</DropdownMenuLabel>
-                          {user.status === "Active" ? (
-                            <DropdownMenuItem onClick={() => handleStatusChange(user.id, "Suspended")} className="text-yellow-500">
+                          {user.status === "active" || !user.status ? (
+                            <DropdownMenuItem onClick={() => handleStatusChange(user.id, "suspended")} className="text-yellow-500">
                               Suspend User
                             </DropdownMenuItem>
                           ) : (
-                            <DropdownMenuItem onClick={() => handleStatusChange(user.id, "Active")} className="text-green-500">
+                            <DropdownMenuItem onClick={() => handleStatusChange(user.id, "active")} className="text-green-500">
                               Activate User
                             </DropdownMenuItem>
                           )}
