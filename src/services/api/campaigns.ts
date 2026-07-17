@@ -46,7 +46,7 @@ export const campaignApi = {
 
   getFeaturedCampaigns: async (): Promise<Campaign[]> => {
     try {
-      const res = await fetch(`${API_URL}/campaigns?featured=true`);
+      const res = await fetch(`${API_URL}/campaigns?featured=true&status=ACTIVE`);
       if (!res.ok) throw new Error('Failed to fetch featured campaigns');
       return await res.json();
     } catch (error) {

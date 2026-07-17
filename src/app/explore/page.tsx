@@ -19,7 +19,7 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    campaignApi.getCampaigns().then(data => {
+    campaignApi.getCampaigns({ status: 'ACTIVE' }).then(data => {
       setCampaigns(data);
       setLoading(false);
     });
