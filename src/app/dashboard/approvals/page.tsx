@@ -38,7 +38,7 @@ export default function ApprovalsPage() {
   const handleApprove = async (id: string, title: string) => {
     try {
       await campaignApi.updateCampaign(id, { status: 'ACTIVE' });
-      setApprovals(approvals.filter(app => app.id !== id));
+      setApprovals(approvals.map(app => app.id === id ? { ...app, status: 'ACTIVE' } : app));
       toast.success(`Approved campaign: ${title}`);
       if (selectedApproval?.id === id) setSelectedApproval(null);
     } catch (error) {
@@ -49,7 +49,7 @@ export default function ApprovalsPage() {
   const handleReject = async (id: string, title: string) => {
     try {
       await campaignApi.updateCampaign(id, { status: 'REJECTED' });
-      setApprovals(approvals.filter(app => app.id !== id));
+      setApprovals(approvals.map(app => app.id === id ? { ...app, status: 'REJECTED' } : app));
       toast.error(`Rejected campaign: ${title}`);
       if (selectedApproval?.id === id) setSelectedApproval(null);
     } catch (error) {
@@ -93,7 +93,7 @@ export default function ApprovalsPage() {
                 <th className="px-6 py-4 font-medium text-muted-foreground">Campaign & Creator</th>
                 <th className="px-6 py-4 font-medium text-muted-foreground">Funding Goal</th>
                 <th className="px-6 py-4 font-medium text-muted-foreground">Submitted</th>
-                <th className="px-6 py-4 font-medium text-muted-foreground">Risk Level</th>
+                <th className="px-6 py-4 font-medium text-muted-foreground">Status</th>
                 <th className="px-6 py-4 font-medium text-muted-foreground text-right">Actions</th>
               </tr>
             </thead>
@@ -119,10 +119,11 @@ export default function ApprovalsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge variant="outline" className={`
-                        ${(item.goalAmount || 0) < 5000 ? 'border-green-500 text-green-500' : ''}
-                        ${(item.goalAmount || 0) >= 5000 ? 'border-yellow-500 text-yellow-500' : ''}
+                        ${item.status === 'ACTIVE' ? 'border-green-500 text-green-500' : ''}
+                        ${item.status === 'PENDING' ? 'border-orange-500 text-orange-500' : ''}
+                        ${item.status === 'REJECTED' ? 'border-red-500 text-red-500' : ''}
                       `}>
-                        {(item.goalAmount || 0) < 5000 ? 'Low' : 'Medium'}
+                        {item.status}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right space-x-2 flex items-center justify-end">

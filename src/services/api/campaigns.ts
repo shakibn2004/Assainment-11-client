@@ -10,7 +10,7 @@ export const campaignApi = {
       if (filters?.status) {
         url += `?status=${filters.status}`;
       }
-      const res = await fetch(url);
+      const res = await fetch(url, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch campaigns');
       return await res.json();
     } catch (error) {
@@ -21,7 +21,7 @@ export const campaignApi = {
 
   getCampaignsByCreator: async (creatorId: string): Promise<Campaign[]> => {
     try {
-      const res = await fetch(`${API_URL}/campaigns?creatorId=${creatorId}`);
+      const res = await fetch(`${API_URL}/campaigns?creatorId=${creatorId}`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch creator campaigns');
       return await res.json();
     } catch (error) {
@@ -32,7 +32,7 @@ export const campaignApi = {
 
   getCampaignById: async (id: string): Promise<Campaign | null> => {
     try {
-      const res = await fetch(`${API_URL}/campaigns/${id}`);
+      const res = await fetch(`${API_URL}/campaigns/${id}`, { cache: 'no-store' });
       if (!res.ok) {
         if (res.status === 404) return null;
         throw new Error('Failed to fetch campaign');
@@ -46,7 +46,7 @@ export const campaignApi = {
 
   getFeaturedCampaigns: async (): Promise<Campaign[]> => {
     try {
-      const res = await fetch(`${API_URL}/campaigns?featured=true&status=ACTIVE`);
+      const res = await fetch(`${API_URL}/campaigns?featured=true&status=ACTIVE`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch featured campaigns');
       return await res.json();
     } catch (error) {
